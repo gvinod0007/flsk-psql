@@ -2,7 +2,7 @@ name: Build and Push to ECR
 on:
   push:
     branches:
-      - main  # Trigger this workflow on push to the 'main' branch
+      - main  
 jobs:
   build-and-push:
     runs-on: ubuntu-latest  # Use the latest Ubuntu virtual environment
