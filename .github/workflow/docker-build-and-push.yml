@@ -3,23 +3,36 @@ name: Build and Push to ECR
 on:
   push:
     branches:
-      - main  # Trigger this workflow on push to the main branch
+      - main  # Trigger this workflow on push to the 'main' branch
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-and-push:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu virtual environment
 
     steps:
+      # Step 1: Checkout code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Log in to Amazon ECR
+      # Step 2: Configure AWS credentials using secrets stored in GitHub
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1  # Specify the AWS region for ECR
+
+      # Step 3: Log in to Amazon ECR
+      - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build the Docker image
+      # Step 4: Build and tag the Docker image
+      - name: Build and tag Docker image
         run: |
-          docker build -t 637423378523.dkr.ecr.ap-south-1.amazonaws.com/dev/psql:latest .
+          docker build -t django-sample-app:latest .  # Build Docker image
+          docker tag django-sample-app:latest 637423378523.dkr.ecr.ap-south-1.amazonaws.com/dev/psql:latest  # Tag for ECR
 
-      - name: Push the Docker image to ECR
+      # Step 5: Push the Docker image to Amazon ECR
+      - name: Push Docker image to Amazon ECR
         run: |
-          docker push 637423378523.dkr.ecr.ap-south-1.amazonaws.com/dev/psql:latest
+          docker push 637423378523.dkr.ecr.ap-south-1.amazonaws.com/dev/psql:latest  # Push to ECR
