@@ -4,6 +4,7 @@ from os import environ
 from urllib.parse import quote as url_quote  # Updated import
 from sqlalchemy.exc import IntegrityError
 
+
 app = Flask(__name__)
 
 # Set up the SQLAlchemy database URI from environment variable
