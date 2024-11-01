@@ -1,31 +1,62 @@
-version: "3.9"
+# version: "3.9"
+# services:
+#  flask_app:
+#    container_name: flask_app
+#    image: headinthecloudsonline/flask_crud_api:1.0
+#    build: .
+#    ports:
+#      - "3000:3000"
+#    environment:
+#      - DB_URL=${DB_URL}
+
+#    depends_on:
+#    - flask_db
+
+#  flask_db:
+#    container_name: flask_db
+#    image: postgres:12
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      # - POSTGRES_PASSWORD=postgres_pass_example
+#      # - POSTGRES_USER=postgres_user_example
+#      # - POSTGRES_DB=postgres_example
+#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#      - POSTGRES_USER=${POSTGRES_USER}
+#      - POSTGRES_DB=${POSTGRES_DB}
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+
+# volumes:
+#  pgdata: {}
+
+
+
+version: '2.0'
+
 services:
- flask_app:
-   container_name: flask_app
-   image: headinthecloudsonline/flask_crud_api:1.0
-   build: .
-   ports:
-     - "3000:3000"
-   environment:
-     - DB_URL=${DB_URL}
+  flask_app:
+    container_name: flask_app
+    image: headinthecloudsonline/flask_crud_api:1.0
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_URL=postgresql://vinod:123@db:5432/app  # Connection URL for the database
+    depends_on:
+      - db
 
-   depends_on:
-   - flask_db
-
- flask_db:
-   container_name: flask_db
-   image: postgres:12
-   ports:
-     - "5432:5432"
-   environment:
-     # - POSTGRES_PASSWORD=postgres_pass_example
-     # - POSTGRES_USER=postgres_user_example
-     # - POSTGRES_DB=postgres_example
-     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-     - POSTGRES_USER=${POSTGRES_USER}
-     - POSTGRES_DB=${POSTGRES_DB}
-   volumes:
-     - pgdata:/var/lib/postgresql/data
+  db:
+    image: postgres:12-alpine
+    container_name: db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=vinod
+      - POSTGRES_PASSWORD=123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
- pgdata: {}
+  pgdata: {}

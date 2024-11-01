@@ -1,0 +1,25 @@
+name: Build and Push to ECR
+
+on:
+  push:
+    branches:
+      - main  # Trigger this workflow on push to the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build the Docker image
+        run: |
+          docker build -t 637423378523.dkr.ecr.ap-south-1.amazonaws.com/dev/psql:latest .
+
+      - name: Push the Docker image to ECR
+        run: |
+          docker push 637423378523.dkr.ecr.ap-south-1.amazonaws.com/dev/psql:latest

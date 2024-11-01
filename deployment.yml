@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+        - name: flask-app
+          image: your-flask-image:latest  # Replace with your Flask app image name
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_URL
+              value: "postgresql://vinod:123@your-rds-endpoint:5432/app"  # Replace your-rds-endpoint with your actual RDS endpoint
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app-service
+spec:
+  type: LoadBalancer  # Set the service type to LoadBalancer
+  selector:
+    app: flask-app
+  ports:
+    - protocol: TCP
+      port: 80        # Expose port 80 for HTTP access
+      targetPort: 3000  # Forward traffic to container port 3000

@@ -3,7 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from os import environ
 
 app = Flask(__name__)
+
+# Set the SQLALCHEMY_DATABASE_URI from environment variable
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URL')
+
+# Initialize SQLAlchemy
 db = SQLAlchemy(app)
 
 class User(db.Model):
@@ -85,6 +89,6 @@ def delete_user(id):
         return make_response(jsonify({'message': 'user not found'}), 404)
     except Exception as e:
         return make_response(jsonify({'message': 'oops! Something went wrong while deleting user.'}), 500)
-    
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3000)

@@ -8,8 +8,7 @@ WORKDIR /app
 COPY requirements.txt ./
 
 # Install all the Python packages listed in requirements.txt
-# Additionally, install the python-dotenv package to manage environment variables
-RUN pip install -r requirements.txt && pip install python-dotenv
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy all of our project's files into the /app directory in the container
 COPY . .
