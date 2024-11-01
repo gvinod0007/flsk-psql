@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
+from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 
 # Set the SQLALCHEMY_DATABASE_URI from environment variable
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')  # Ensure this matches your deployment variable
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
@@ -24,7 +25,7 @@ class User(db.Model):
 with app.app_context():
     db.create_all()
 
-# Headinthe clouds test route
+# Head in the clouds test route
 @app.route('/hello', methods=['GET'])
 def test():
     return make_response(jsonify({'message': 'hey there! welcome to the headintheclouds community! :)'}), 200)
@@ -32,23 +33,26 @@ def test():
 # Create a user
 @app.route('/users', methods=['POST'])
 def create_user():
+    data = request.get_json()
     try:
-        data = request.get_json()
         new_user = User(username=data['username'], email=data['email'], age=data['age'])
         db.session.add(new_user)
         db.session.commit()
-        return make_response(jsonify({'message': 'user successfully created!'}), 201)
-    except Exception as e:
-        return make_response(jsonify({'message': 'oops! something went wrong while creating user.'}), 500)
+        return make_response(jsonify({'message': 'User successfully created!'}), 201)
+    except IntegrityError:
+        db.session.rollback()
+        return make_response(jsonify({'message': 'User with this username or email already exists.'}), 400)
+    except Exception:
+        return make_response(jsonify({'message': 'Oops! Something went wrong while creating the user.'}), 500)
 
 # Get all users
 @app.route('/users', methods=['GET'])
 def get_users():
     try:
         users = User.query.all()
-        return make_response(jsonify({'message': 'all users fetched successfully', 'users': [user.json() for user in users]}), 200)
-    except Exception as e:
-        return make_response(jsonify({'message': 'oops! something went wrong while fetching users.'}), 500)
+        return make_response(jsonify({'message': 'All users fetched successfully', 'users': [user.json() for user in users]}), 200)
+    except Exception:
+        return make_response(jsonify({'message': 'Oops! Something went wrong while fetching users.'}), 500)
 
 # Get a user by id
 @app.route('/users/<int:id>', methods=['GET'])
@@ -56,26 +60,29 @@ def get_user(id):
     try:
         user = User.query.filter_by(id=id).first()
         if user:
-            return make_response(jsonify({'message': 'user found!', 'user': user.json()}), 200)
-        return make_response(jsonify({'message': 'user not found.'}), 404)
-    except Exception as e:
-        return make_response(jsonify({'message': 'oops! something went wrong while fetching user.'}), 500)
+            return make_response(jsonify({'message': 'User found!', 'user': user.json()}), 200)
+        return make_response(jsonify({'message': 'User not found.'}), 404)
+    except Exception:
+        return make_response(jsonify({'message': 'Oops! Something went wrong while fetching the user.'}), 500)
 
 # Update a user by id
 @app.route('/users/<int:id>', methods=['PUT'])
 def update_user(id):
+    data = request.get_json()
     try:
         user = User.query.filter_by(id=id).first()
         if user:
-            data = request.get_json()
             user.username = data['username']
             user.email = data['email']
-            user.age = data['age']  
+            user.age = data['age']
             db.session.commit()
-            return make_response(jsonify({'message': 'user details successfully updated!'}), 200)
-        return make_response(jsonify({'message': 'user not found.'}), 404)
-    except Exception as e:
-        return make_response(jsonify({'message': 'oops! Something went wrong while updating user details.'}), 500)
+            return make_response(jsonify({'message': 'User details successfully updated!'}), 200)
+        return make_response(jsonify({'message': 'User not found.'}), 404)
+    except IntegrityError:
+        db.session.rollback()
+        return make_response(jsonify({'message': 'User with this username or email already exists.'}), 400)
+    except Exception:
+        return make_response(jsonify({'message': 'Oops! Something went wrong while updating user details.'}), 500)
 
 # Delete a user
 @app.route('/users/<int:id>', methods=['DELETE'])
@@ -85,10 +92,10 @@ def delete_user(id):
         if user:
             db.session.delete(user)
             db.session.commit()
-            return make_response(jsonify({'message': 'user successfully deleted!'}), 200)
-        return make_response(jsonify({'message': 'user not found'}), 404)
-    except Exception as e:
-        return make_response(jsonify({'message': 'oops! Something went wrong while deleting user.'}), 500)
+            return make_response(jsonify({'message': 'User successfully deleted!'}), 200)
+        return make_response(jsonify({'message': 'User not found.'}), 404)
+    except Exception:
+        return make_response(jsonify({'message': 'Oops! Something went wrong while deleting the user.'}), 500)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3000)
