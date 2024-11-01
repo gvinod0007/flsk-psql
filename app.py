@@ -98,4 +98,4 @@ def delete_user(id):
         return make_response(jsonify({'message': 'Oops! Something went wrong while deleting the user.'}), 500)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=3000)
+    app.run(host='0.0.0.0', port=5000)  # Change port to 5000 to match your deployment YAML
