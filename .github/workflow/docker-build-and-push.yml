@@ -30,8 +30,8 @@ jobs:
       # Step 4: Build and tag the Docker image
       - name: Build and tag Docker image
         run: |
-          docker build -t django-sample-app:latest .  # Build Docker image
-          docker tag django-sample-app:latest 637423378523.dkr.ecr.ap-south-1.amazonaws.com/dev/psql:latest  # Tag for ECR
+          docker build -t flask-psql:latest .  # Build Docker image
+          docker tag flask-psql:latest 637423378523.dkr.ecr.ap-south-1.amazonaws.com/dev/psql:latest  # Tag for ECR
 
       # Step 5: Push the Docker image to Amazon ECR
       - name: Push Docker image to Amazon ECR
