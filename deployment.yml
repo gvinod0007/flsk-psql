@@ -1,35 +1,41 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-app
+  name: flask-psql-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: flask-app
+      app: flask-psql
   template:
     metadata:
       labels:
-        app: flask-app
+        app: flask-psql
     spec:
       containers:
-        - name: flask-app
-          image: your-flask-image:latest  # Replace with your Flask app image name
-          ports:
-            - containerPort: 3000
-          env:
-            - name: DB_URL
-              value: "postgresql://vinod:123@your-rds-endpoint:5432/app"  # Replace your-rds-endpoint with your actual RDS endpoint
+      - name: flask-psql-container
+        image: 637423378523.dkr.ecr.ap-south-1.amazonaws.com/dev/psql:latest
+        ports:
+        - containerPort: 5000  
+        env:
+        - name: DB_HOST
+          value: "database-1.c5uqgyeys3rg.ap-south-1.rds.amazonaws.com"
+        - name: DB_NAME
+          value: "database-1"
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "4HV9kBVHtlnKcP3JleHZ"
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: flask-app-service
+  name: flask-psql-service
 spec:
-  type: LoadBalancer  # Set the service type to LoadBalancer
-  selector:
-    app: flask-app
+  type: LoadBalancer
   ports:
-    - protocol: TCP
-      port: 80        # Expose port 80 for HTTP access
-      targetPort: 3000  # Forward traffic to container port 3000
+    - port: 80
+      targetPort: 5000
+  selector:
+    app: flask-psql
