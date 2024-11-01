@@ -1,20 +1,17 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
+from urllib.parse import quote as url_quote  # Updated import
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 
 # Set up the SQLAlchemy database URI from environment variable
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
-db = SQLAlchemy(app)
-
-# Initialize SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')
 db = SQLAlchemy(app)
 
 class User(db.Model):
     __tablename__ = 'hitc_users'
-
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -26,12 +23,10 @@ class User(db.Model):
 with app.app_context():
     db.create_all()
 
-# Head in the clouds test route
 @app.route('/hello', methods=['GET'])
 def test():
     return make_response(jsonify({'message': 'hey there! welcome to the headintheclouds community! :)'}), 200)
 
-# Create a user
 @app.route('/users', methods=['POST'])
 def create_user():
     data = request.get_json()
@@ -46,7 +41,6 @@ def create_user():
     except Exception:
         return make_response(jsonify({'message': 'Oops! Something went wrong while creating the user.'}), 500)
 
-# Get all users
 @app.route('/users', methods=['GET'])
 def get_users():
     try:
@@ -55,7 +49,6 @@ def get_users():
     except Exception:
         return make_response(jsonify({'message': 'Oops! Something went wrong while fetching users.'}), 500)
 
-# Get a user by id
 @app.route('/users/<int:id>', methods=['GET'])
 def get_user(id):
     try:
@@ -66,7 +59,6 @@ def get_user(id):
     except Exception:
         return make_response(jsonify({'message': 'Oops! Something went wrong while fetching the user.'}), 500)
 
-# Update a user by id
 @app.route('/users/<int:id>', methods=['PUT'])
 def update_user(id):
     data = request.get_json()
@@ -85,7 +77,6 @@ def update_user(id):
     except Exception:
         return make_response(jsonify({'message': 'Oops! Something went wrong while updating user details.'}), 500)
 
-# Delete a user
 @app.route('/users/<int:id>', methods=['DELETE'])
 def delete_user(id):
     try:
@@ -99,4 +90,4 @@ def delete_user(id):
         return make_response(jsonify({'message': 'Oops! Something went wrong while deleting the user.'}), 500)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)  # Change port to 5000 to match your deployment YAML
+    app.run(host='0.0.0.0', port=5000)

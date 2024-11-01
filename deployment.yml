@@ -30,7 +30,6 @@ spec:
           value: "4HV9kBVHtlnKcP3JleHZ"
         - name: SQLALCHEMY_DATABASE_URI
           value: "postgresql://postgres:4HV9kBVHtlnKcP3JleHZ@database-1.c5uqgyeys3rg.ap-south-1.rds.amazonaws.com/database-1"
-        command: ["sh", "-c", "echo DB_HOST=$DB_HOST; echo DB_NAME=$DB_NAME; echo DB_USER=$DB_USER; echo DB_PASSWORD=$DB_PASSWORD; echo SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI; python app.py"]
 
 ---
 apiVersion: v1
