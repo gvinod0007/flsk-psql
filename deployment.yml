@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask-psql-deployment
+  labels:
+    app: flask-psql
 spec:
   replicas: 2
   selector:
@@ -26,6 +28,8 @@ spec:
           value: "postgres"
         - name: DB_PASSWORD
           value: "4HV9kBVHtlnKcP3JleHZ"
+        - name: SQLALCHEMY_DATABASE_URI
+          value: "postgresql://postgres:4HV9kBVHtlnKcP3JleHZ@database-1.c5uqgyeys3rg.ap-south-1.rds.amazonaws.com/database-1"
 
 ---
 apiVersion: v1

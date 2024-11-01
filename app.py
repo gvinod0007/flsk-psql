@@ -5,8 +5,9 @@ from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 
-# Set the SQLALCHEMY_DATABASE_URI from environment variable
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')  # Ensure this matches your deployment variable
+# Set up the SQLAlchemy database URI from environment variable
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+db = SQLAlchemy(app)
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
